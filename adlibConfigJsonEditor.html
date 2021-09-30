@@ -1,0 +1,98 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>AdlibConfig JSON Editor</title>
+    <script src="https://cdn.jsdelivr.net/npm/@json-editor/json-editor@latest/dist/jsoneditor.min.js"></script>
+  </head>
+  <body>
+
+    <div id='editor_holder'></div>
+    <br>
+    <button id='loadJsonButton'>Load json to editor</button>
+    <button id='saveJsonButton'>Save json to textArea</button>
+    <br>
+    <textarea id="json_text" rows="10" cols="100"></textarea>
+
+    <script>
+      // JsonEditor : https://github.com/json-editor/json-editor
+      var adlibConfigJsonSchema = {
+        "type": "object",
+        "title": "Adlib config",
+
+        "properties": {
+
+          "replaceHouseAds": { "type": "boolean", "default": true },
+          "displayAppOpenAds": { "type": "boolean", "default": true },
+          "displayFullscreenAds": { "type": "boolean", "default": true },
+          "displayAdsAboveKeyboardWithoutRefreshing": { "type": "boolean", "default": true },
+          "displayAdsInActiveCallAndDialpad": { "type": "boolean", "default": true },
+          "usePersistentCacheForApiAds": { "type": "boolean", "default": true },
+          "firebasePerformanceEnabled": { "type": "boolean", "default": false, "description":"Reports sampling rates:" },
+
+          "liteReportsSamplingRate": { "type": "number", "default": 0.05 },
+          "debugReportsSamplingRate": { "type": "number", "default": 0.002, "description": "Lrec - Banner max screen percentage:" },
+
+          "lrecInInboxMaxScreenPercent": { "type": "number", "default": 42.0 },
+          "bannerInDialpadCallScreenMaxScreenPercent": { "type": "number", "default": 30.0, "description": "FullScreen - AppOpen cappings:" },
+
+          "appOpenCap": { "type": "integer", "default": 60 },
+          "fullScreenCap": { "type": "integer", "default": 60 },
+          "fullScreenConversationToInboxCap": { "type": "integer", "default": 1800 },
+          "fullScreenAfterIncomingCallCap": { "type": "integer", "default": 600 },
+          "fullScreenAfterOutgoingCallCap": { "type": "integer", "default": 600 },
+
+          "paidDefaultAd": {
+            "type": "object",
+            "title": "PaidDefaultAd",
+
+            "properties": {
+              "providerName_banner": { "type": "string", "enum": ["googleAdExchange","mopub-sdk-static"], "default": "googleAdExchange" },
+              "providerName_lrec": { "type": "string", "enum": ["googleAdExchange","mopub-sdk-static"], "default": "googleAdExchange" },
+              "providerTrackId_banner": { "type": "string", "default": "" },
+              "providerTrackId_lrec": { "type": "string", "default": "" },
+            },
+          },
+
+          "realTimeAuction": {
+            "type": "object",
+            "title": "RealTimeAuction",
+
+            "properties": {
+              "lrec_enabled": { "type": "boolean", "default": false },
+              "banner_enabled": { "type": "boolean", "default": false },
+              "removeRealTimeAuctionAdsFromParallelBid": { "type": "boolean", "default": false },
+            },
+          },
+        }
+      };
+
+      var editor = new JSONEditor(document.getElementById('editor_holder'), {
+          required_by_default: true,
+
+          disable_collapse: true,
+          disable_edit_json: true,
+          disable_properties: true,
+
+          //theme: "html",
+          theme: "barebones",
+
+          schema: adlibConfigJsonSchema
+      });
+
+      document.getElementById('saveJsonButton').addEventListener('click',function() {
+          var jsonEditorOutput = JSON.stringify(editor.getValue(), null, 2);
+          console.log(jsonEditorOutput);
+          document.getElementById('json_text').value = jsonEditorOutput;
+        });
+
+      document.getElementById('loadJsonButton').addEventListener('click',function() {
+          var jsonText = document.getElementById('json_text').value;
+          console.log(jsonText);
+          var jsonObj = JSON.parse(jsonText);
+          editor.setValue(jsonObj);
+      });
+
+    </script>
+
+  </body>
+</html>
